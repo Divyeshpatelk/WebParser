@@ -118,9 +118,9 @@ export class AppComponent implements OnInit {
   onParserSubmit() {
     //console.log('angular data::'+this.plainText);
     this.displayText = "";
+    this.parserService.configData = this.myservice.configData;
     var result = this.parserService.withoutAnswer(
       this.plainText,
-      this.myservice.configData,
       this.answer
     );
     //console.log('final output: '+ JSON.stringify(result));
