@@ -1,0 +1,16 @@
+.config{
+  height: 400px;
+  width: 100%;
+}
+h2 {
+	font: 40px Tahoma, Helvetica, Arial, Sans-Serif;
+	text-align: center;
+  color: black;
+}
+.container{
+  background-color: silver;
+}
+
+h5{
+  color: red;
+}

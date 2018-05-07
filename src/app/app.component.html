@@ -1,20 +1,147 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div style="text-align:center" class="header">
+  <br />
+  <h2>
+    {{ title }}
+  </h2>
+  <hr />
+<div  *ngIf="!checkConfig">
+  <div style="text-align:right" class="container">
+    <button type="button" class="btn btn-warning" (click)="openConfig()">Open Config</button>
+    <button type="button" class="btn btn-warning">Submit</button>
+  </div>
+  <div class="container">
+    <form>
+      <div class="form-group">
+        <table width=100%>
+          <tr>
+            <td>
+              <label for="textarea1">Enter Text</label>
+              <textarea class="form-control config" id="textarea1" (keyup)="onKeyUp($event)" ng-model="plainText" value="{{plainText}}"></textarea>
+              <div style="text-align:left" *ngIf="!checkConfig">
+                  <h5>Error Log: </h5>
+              </div>
+            </td>
+            <td><button type="button" class="btn btn-primary" (click)="onParserSubmit()">>></button></td>
+            <td>
+              <label for="textarea1">Your Json</label>
+              <textarea class="form-control config" id="textarea1" readonly ng-model="displayText" value="{{displayText | json}}"></textarea>
+              <div style="text-align:left" *ngIf="!checkConfig">
+                  <h5>Error Log: </h5>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </div>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
 
+<!-- ---------------------- config file code -->
+
+<div style="text-align:center" class="header" *ngIf="checkConfig">
+  <div class="container">
+  <form [formGroup]="myConfigFormGroup" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="inputState">Select Your Choice </label>
+            <select id="inputState" class="form-control" (change)="onChange()" formControlName="choice">
+              <option selected>With Answer</option>
+              <option selected>Without Answer</option>
+              <option selected>Both</option>
+            </select>
+            <h5 *ngIf="!myConfigFormGroup.controls['choice'].valid && myConfigFormGroup.controls['choice'].touched">Select choice</h5>
+          </div>
+          <div class="form-group col-md-4">
+              <label for="inputState">Quetions Pattern</label>
+              <select id="inputState" class="form-control" formControlName="quetionPattern">
+                <option selected>(1)</option>
+                <option selected>1.</option>
+              </select>
+              <h5 *ngIf="!myConfigFormGroup.controls['quetionPattern'].valid && myConfigFormGroup.controls['quetionPattern'].touched">Select choice</h5>
+          </div>
+          <div class="form-group col-md-4">
+              <label for="inputState">Options Pattern</label>
+              <select id="inputState" class="form-control" formControlName="optionPattern">
+                <option selected>(a)</option>
+                <option selected>(A)</option>
+                <option selected>(a) or (A)</option>
+                <option selected>a)</option>
+                <option selected>A)</option>
+                <option selected>a) or A)</option>
+              </select>
+              <h5 *ngIf="!myConfigFormGroup.controls['optionPattern'].valid && myConfigFormGroup.controls['optionPattern'].touched">Select choice</h5>
+          </div>
+          <div class="form-group col-md-4" *ngIf="withAnswer">
+              <label for="inputState">Answer Pattern</label>
+              <select id="inputState" class="form-control" formControlName="answerPattern">
+                <option selected>Ans.</option>
+                <option selected>Answer</option>
+                <option selected>=></option>
+              </select>
+          </div>
+          <div class="form-group col-md-4" *ngIf="withoutAnswer">
+              <label for="inputState">Answer Identifire Pattern</label>
+              <select id="inputState" class="form-control" formControlName="ansIdtPattern">
+                <option selected>1. (a)</option>
+                <option selected>1. (A)</option>
+                <option selected>1. (a) or 1. (A)</option>
+                <option selected>1. a</option>
+                <option selected>1. (A)</option>
+                <option selected>1. a or 1. A</option>
+                <option selected>(1) (a)</option>
+                <option selected>(1) (A)</option>
+                <option selected>(1) (a) or (1) (A)</option>
+                <option selected>(1) a</option>
+                <option selected>(1) A</option>
+                <option selected>(1) a or (1) A</option>
+              </select>
+          </div>
+      </div>
+<hr>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputEmail4">MappingId</label>
+        <input type="text" class="form-control" placeholder="MappingId" formControlName="mappingId">
+        <h5 *ngIf="!myConfigFormGroup.controls['mappingId'].valid && myConfigFormGroup.controls['mappingId'].touched">Enter MappingId</h5>
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputPassword4">SubjectId</label>
+        <input class="form-control" placeholder="SubjectId" formControlName="subjectId">
+        <h5 *ngIf="!myConfigFormGroup.controls['subjectId'].valid && myConfigFormGroup.controls['subjectId'].touched">Enter SubjectId</h5>
+      </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputEmail4">TestId</label>
+          <input type="text" class="form-control" placeholder="TestId" formControlName="testId">
+          <h5 *ngIf="!myConfigFormGroup.controls['testId'].valid && myConfigFormGroup.controls['testId'].touched">Enter SubjectId</h5>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputPassword4">SectionId</label>
+          <input type="text" class="form-control" placeholder="SectionId" formControlName="sectionId">
+          <h5 *ngIf="!myConfigFormGroup.controls['sectionId'].valid && myConfigFormGroup.controls['sectionId'].touched">Enter SubjectId</h5>
+        </div>
+      </div>
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        <label for="inputCity">FolderId</label>
+        <input type="text" class="form-control" placeholder="FolderId" formControlName="folderId">
+        <h5 *ngIf="!myConfigFormGroup.controls['folderId'].valid && myConfigFormGroup.controls['folderId'].touched">Enter SubjectId</h5>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputZip">IndexId</label>
+        <input type="text" class="form-control" placeholder="IndexId" formControlName="indexId">
+        <h5 *ngIf="!myConfigFormGroup.controls['indexId'].valid && myConfigFormGroup.controls['indexId'].touched">Enter SubjectId</h5>
+      </div>
+      <div class="form-group col-md-2">
+          <label for="inputZip">AccountId</label>
+          <input type="text" class="form-control" placeholder="AccountId" formControlName="accountId">
+          <h5 *ngIf="!myConfigFormGroup.controls['accountId'].valid && myConfigFormGroup.controls['accountId'].touched">Enter SubjectId</h5>
+        </div>
+    </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+</div>
+</div>
