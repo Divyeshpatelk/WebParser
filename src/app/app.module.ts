@@ -5,10 +5,12 @@ import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ConfigService } from '../app/myservice/config.service';
 import { ParserServiceService } from '../app/myservice/parser-service.service';
+import { DisplayResultComponent } from './display-result/display-result.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DisplayResultComponent
   ],
   imports: [
     BrowserModule,

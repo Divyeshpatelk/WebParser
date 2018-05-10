@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
+import { ConfigService } from "../myservice/config.service";
 
 @Injectable()
 export class ParserServiceService {
+  questionCount = 0;
   outputResultIndex = 0;
-  constructor() {}
-
- outputResult = [
+  constructor(private configservice: ConfigService) {}
+  explainationWithHint;
+  outputResult = [
     /* {
       type: "",
       questions: "",
@@ -66,18 +68,17 @@ export class ParserServiceService {
   };
 
   withoutAnswer(readData, answerData) {
-
     console.log("configData data", this.configData.quePattern);
     var nonAnswerQue = [];
     nonAnswerQue = readData.match(
       new RegExp(answerData.groupofIdentifier, "gm")
     );
-    /* var explaination = [],
+    var explaination = [],
       explainationJson = [];
-    if (explainationWithHint) {
-      explaination = readData.match(explainationWithHint);
-      explainationJson = storeExplaination(explaination);
-    }  */
+    if (this.explainationWithHint) {
+      explaination = readData.match(this.explainationWithHint);
+      explainationJson = this.storeExplaination(explaination);
+    }
 
     //main work ............................
     if (nonAnswerQue) {
@@ -104,19 +105,27 @@ export class ParserServiceService {
                 new RegExp(this.configData.optPattern)
               );
 
-              if (que.data.match(/<br>+$/gm)) {
+              if(que == null)
+              return null;
+              que.data = que.data.replace(/\s+$/, "");
+              while (que.data.match(/<br>+$/gm)) {
                 var removeBr = new RegExp(/<br>+$/, "gm");
                 que.data = que.data.replace(removeBr, "");
+                que.data = que.data.replace(/\s+$/, "");
               }
 
               var opt = this.readOptions(
                 tempque,
                 new RegExp(this.configData.quePattern),
+                new RegExp(this.configData.optPattern),
                 new RegExp(this.configData.optPattern)
               );
 
               if (que && opt) {
-                var options1 = this.spreadOption(opt, this.configData.optPattern);
+                var options1 = this.spreadOption(
+                  opt,
+                  this.configData.optPattern
+                );
 
                 var optionArraywithID = [];
                 for (var i = 0; i < options1.length; i++) {
@@ -135,6 +144,8 @@ export class ParserServiceService {
                   explaination: ""
                 };
                 storeQuestionsSet.push(temp);
+              } else {
+                return null;
               }
 
               if (!tempque[this.outputResultIndex]) break;
@@ -147,7 +158,7 @@ export class ParserServiceService {
           };
           this.nonAnsQuetions.push(allQuestionsData);
         } else if (nonAnswerQue[n].match(/^##os-([1-9])/gm)) {
-          console.log("Answer is work: ");
+          //console.log("Answer is work: ");
           var excePattern = new RegExp(/^##os-(\d+)/gm);
           var groupMatch = excePattern.exec(nonAnswerQue[n].match(excePattern));
           var ide = groupMatch[1];
@@ -168,6 +179,9 @@ export class ParserServiceService {
             this.outputResultIndex++;
           }
 
+          if(!(multipleOption.match(new RegExp(answerData.idntPattern))))
+            return null;
+
           this.storeAnswerForMulichoice(
             readData,
             multipleOption,
@@ -179,9 +193,93 @@ export class ParserServiceService {
       } // End main For Loop
       //end main work.........................
     }
-    //addExplaination(explainationJson);
-
+    this.addExplaination(explainationJson);
+    this.configservice.questionCount = this.questionCount;
     return this.storeResult(this.nonAnsQuetions, this.configData);
+  }
+  // with answer
+  withAnswer(readData, ansPattern) {
+    if (this.explainationWithHint)
+      readData = readData.replace(this.explainationWithHint, "");
+
+    var result = readData.match(/.*/gm);
+
+    while (result.length > this.outputResultIndex) {
+      var quetions = this.readQuetions(
+        result,
+        this.configData.quePattern,
+        this.configData.optPattern
+      );
+      var remTagofquetions = "";
+
+      var options = this.readOptions(
+        result,
+        this.configData.optPattern,
+        this.configData.quePattern,
+        ansPattern
+      );
+      var optionArray = new Array();
+
+      if (quetions != null && options.length != 0) {
+        remTagofquetions = quetions.data.replace(
+          this.configData.quePattern,
+          ""
+        );
+        optionArray = this.spreadOption(options, this.configData.optPattern);
+        if (optionArray.length == 4) {
+          var optionArraywithID = [];
+          for (var i = 0; i < optionArray.length; i++) {
+            optionArraywithID.push({ id: i + 1, text: optionArray[i] });
+          }
+
+          var answer = this.readAnswer(
+            result,
+            ansPattern,
+            this.configData.quePattern
+          );
+
+          if (answer) answer = answer.replace(/ans:\s/gm, "");
+
+          if (answer != null) {
+            var answerWithoutB = answer;
+            this.outputResult.push({
+              type: "SINGLE",
+              question: remTagofquetions.trim(),
+
+              choices: optionArraywithID,
+              difficultyLevel: 1,
+
+              rightAnswers: [this.AtoZwithNumber(answerWithoutB)],
+              explanation: "",
+              courses: [
+                {
+                  mappingId: this.configData.mappingId,
+                  subjectid: this.configData.subjectid,
+                  indexid: this.configData.indexid,
+                  sectionId: this.configData.sectionId
+                }
+              ],
+              testId: this.configData.testId,
+              purpose: "PARTNER_SECTION"
+            });
+          }
+        }
+      }
+    }
+  }
+  // with answer
+
+  readAnswer(result, ansPattern, quePattern) {
+    for (; this.outputResultIndex < result.length; this.outputResultIndex++) {
+      if (result[this.outputResultIndex].match(ansPattern)) {
+        return result[this.outputResultIndex];
+      } else if (result[this.outputResultIndex].match(quePattern)) {
+        // need to be improve more -->
+        break;
+      }
+    }
+
+    return null;
   }
 
   storeResult(nonAnsQuetions, configData) {
@@ -226,8 +324,12 @@ export class ParserServiceService {
         var no = groupMatch[1];
 
         while (!result[this.outputResultIndex].match(optPattern)) {
-          if (result[this.outputResultIndex])
+          if (
+            result[this.outputResultIndex] &&
+            result[this.outputResultIndex].length > 0
+          )
             result[this.outputResultIndex] += "<br>";
+
           dataOfQuetions += result[this.outputResultIndex];
 
           this.outputResultIndex++;
@@ -240,12 +342,13 @@ export class ParserServiceService {
             dataOfQuetions = "";
           }
         }
+        this.questionCount++;
         return { id: no, data: dataOfQuetions };
       }
     }
     return null;
   }
-  readOptions(result, quePattern, optPattern) {
+  readOptions(result, quePattern, optPattern, ansPattern) {
     var tempArr = "";
     var count = 0;
 
@@ -255,6 +358,7 @@ export class ParserServiceService {
         tempArr += "<br>";
       } else if (
         result[this.outputResultIndex].match(quePattern) ||
+        result[this.outputResultIndex].match(ansPattern) ||
         result[this.outputResultIndex].match(/^##qe-([1-9])/gm)
       ) {
         break;
@@ -270,6 +374,7 @@ export class ParserServiceService {
     var temp = new Array();
     splitArray = options.split(new RegExp(opattern, "gm"));
     for (var j = 1; j < splitArray.length; j++) {
+      splitArray[j] = splitArray[j].replace(/\s+$/, "");
       if (splitArray[j].match(/<br>+$/gm)) {
         var removeBr = new RegExp(/<br>+$/, "gm");
         splitArray[j] = splitArray[j].replace(removeBr, "");
@@ -312,7 +417,7 @@ export class ParserServiceService {
     var TempStoreAnswer: any = { identifier: ide, answer: storeAnswerSet };
 
     this.nonAnsOptions.push(TempStoreAnswer);
-    console.log("json: ", TempStoreAnswer);
+    //console.log("json: ", TempStoreAnswer);
     this.storeAnswerTononAnsQuetions();
   }
 
@@ -360,6 +465,68 @@ export class ParserServiceService {
       return 8;
     } else {
       return null;
+    }
+  }
+
+  storeExplaination(explaination) {
+    var explainationData = [];
+    if (explaination) {
+      for (var i = 0; i < explaination.length; i++) {
+        explainationData = explaination[i].match(/.*/gm);
+        //console.log("explainationData length is :- "+explainationData);
+        for (var j = 0; j < explainationData.length; j++) {
+          var dataOfQuetions = "";
+          if (explainationData[j].match(this.configData.quePattern)) {
+            var groupMatch = new RegExp(this.configData.quePattern).exec(
+              explainationData[j].match(this.configData.quePattern)
+            );
+            var no = groupMatch[1];
+            //console.log("not error ",no);
+            do {
+              dataOfQuetions += explainationData[j];
+              //console.log("Explaination data is ",dataOfQuetions);
+              j++;
+
+              if (j >= explainationData.length) break;
+
+              if (!explainationData[j]) continue;
+
+              if (explainationData[j].match(this.configData.quePattern)) {
+                break;
+              }
+            } while (!explainationData[j].match(this.configData.quePattern));
+            j--;
+            this.explainationArray.push({
+              qno: no,
+              exp: dataOfQuetions.replace(this.configData.quePattern, "")
+            });
+          }
+        }
+      }
+
+      //Display the explaination Array
+      /*
+     for(var k=1;k<explainationArray.length;k++){
+        console.log("Explaination is :- ","qno :- ",explainationArray[k].qno,"data :- ",explainationArray[k].exp);
+    } */
+    }
+    return this.explainationArray;
+  }
+
+  addExplaination(explainationJson) {
+    if (this.nonAnsQuetions && explainationJson) {
+      for (var i = 0; i < explainationJson.length; i++) {
+        for (var k = 0; k < this.nonAnsQuetions.length; k++) {
+          for (var j = 0; j < this.nonAnsQuetions[k].que.length; j++) {
+            if (this.nonAnsQuetions[k].que[j].qno === explainationJson[i].qno) {
+              this.nonAnsQuetions[k].que[j].explaination =
+                explainationJson[i].exp;
+            } else {
+              //console.log("error ",explainationJson[i].qno);
+            }
+          }
+        }
+      }
     }
   }
 } // End class

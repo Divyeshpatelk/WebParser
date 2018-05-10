@@ -1,0 +1,21 @@
+
+
+<div *ngFor="let choice of result; let i = index">
+  <hr>
+
+  <label class="custom-control mb-0 custom-checkbox mr-0">
+    <div style="text-align:left">
+      <h6 *ngFor="let q of qno; let k = index">
+        <h6 *ngIf="q == i+1">{{questionNumber[k]}}</h6>
+      </h6>
+    </div>
+    <span class="custom-control-description choicetext"> {{i+1}} . {{choice.question}}</span>
+  </label>
+
+  <div *ngFor="let option of choice.choices; let j = index">
+
+    <input type="checkbox" [disabled]="true" [checked]="j+1 == choice.rightAnswers[0]" />
+    <span>{{option.text}}</span>
+  </div>
+  <hr>
+</div>

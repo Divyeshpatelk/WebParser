@@ -2,8 +2,11 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class ConfigService {
+  questionCount = 0;
   constructor() {}
-
+  result;
+  qno = [];
+  questionNumber = [];
   configData = {
     quePattern: "",
     optPattern: "",
@@ -26,15 +29,15 @@ export class ConfigService {
     "1. (a)": "(\\d+)\\.\\s\\(([a-d])\\)",
     "1. (A)": "(\\d+)\\.\\s\\(([A-D])\\)",
     "1. (a) or 1. (A)": "(\\d+)\\.\\s\\(([a-dA-D])\\)",
-    "1. a": "",
-    "1. A": "",
-    "1. a or 1. A": "(\\d+).\\s([a-dA-D])",
-    "(1) (a)": "",
-    "(1) (A)": "",
-    "(1) (a) or (1) (A)": "",
-    "(1) a": "",
-    "(1) A": "",
-    "(1) a or (1) A": "",
+    "1. a": "(\\d+)\\.\\s([a-d])",
+    "1. A": "(\\d+)\\.\\s([A-D])",
+    "1. a or 1. A": "(\\d+)\\.\\s([a-dA-D])",
+    "(1) (a)": "\((\d+)\)\s\(([a-d])\)",
+    "(1) (A)": "\((\d+)\)\s\(([A-D])\)",
+    "(1) (a) or (1) (A)": "\((\d+)\)\s\(([a-dA-D])\)",
+    "(1) a": "\((\d+)\)\s([a-d])",
+    "(1) A": "\((\d+)\)\s([A-D])",
+    "(1) a or (1) A": "\((\d+)\)\s([a-dA-D])",
     "groupofIdentifier":
       "(##qs-(\\d+)([\\s\\S]*?)##qe-\\d+)|(##os-(\\d+)([\\s\\S]*?)##oe-\\d+)"
   };

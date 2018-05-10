@@ -1,3 +1,4 @@
+
 .config{
   height: 400px;
   width: 100%;
@@ -11,6 +12,70 @@ h2 {
   background-color: silver;
 }
 
-h5{
+h5,h6{
   color: red;
 }
+
+
+h4{
+  color: green;
+}
+
+.btn1{
+  height: 25px;
+}
+
+.option-list {
+  border-left: 3px solid gray-200;
+}
+
+.question-list {
+  box-shadow: 0 0 3px 0 gray-300;
+  border-left: 5px solid white;
+
+}
+.question-list.selected {
+  border-left: 5px solid orange;
+  box-shadow: 0 0 3px 0 orange;
+}
+.question-list:hover {
+  box-shadow: 0 0 3px 0 orange;
+}
+
+.question {
+  background: white !important;
+  color: gray-900 !important;
+  font-family: font-family-sans-serif !important;
+  font-size: font-size-base !important;
+}
+
+.custom-control-input:disabled ~ .custom-control-description {
+  color: darkblue;
+}
+
+.custom-control-input:disabled:checked ~ .custom-control-indicator {
+  background-color: orange;
+}
+
+.choicetext {
+  color: darkblue;
+  word-break: normal;
+  word-wrap: break-word;
+  max-width: 250px;
+}
+
+.stuck {
+  position: fixed;
+  top: 170px;
+  left: 700px;
+  bottom: 65px;
+  width: 550px;
+  background-color: #eee;
+  overflow-y: scroll;
+}
+
+.stuck p {
+  margin: 10px;
+}
+
+

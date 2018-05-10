@@ -12,9 +12,13 @@ export class AppComponent implements OnInit {
   title = "Html to Json";
   plainText;
   displayText;
+  result;
+  arrowButton = true;
   answer = {};
+  withAnswerPattern;
   checkConfig = false;
   myConfigFormGroup: FormGroup;
+  myTextareaFormGroup: FormGroup;
   withAnswer = false;
   withoutAnswer = false;
 
@@ -39,7 +43,12 @@ export class AppComponent implements OnInit {
       accountId: new FormControl("", Validators.required)
     });
 
+    this.myTextareaFormGroup = new FormGroup({
+      plain: new FormControl("", Validators.required),
+      json: new FormControl("", Validators.required)
+    });
     this.plainText = sessionStorage.getItem("plainText");
+    this.arrowButton = false;
   }
 
   openConfig() {
@@ -63,12 +72,12 @@ export class AppComponent implements OnInit {
   }
 
   onSubmit() {
-    this.myservice.configData.quePattern = this.myservice.quetionsRegex[this.myConfigFormGroup.get(
-      "quetionPattern"
-    ).value];
-    this.myservice.configData.optPattern = this.myservice.optionRegex[this.myConfigFormGroup.get(
-      "optionPattern"
-    ).value];
+    this.myservice.configData.quePattern = this.myservice.quetionsRegex[
+      this.myConfigFormGroup.get("quetionPattern").value
+    ];
+    this.myservice.configData.optPattern = this.myservice.optionRegex[
+      this.myConfigFormGroup.get("optionPattern").value
+    ];
     this.myservice.configData.mappingId = this.myConfigFormGroup.get(
       "mappingId"
     ).value;
@@ -90,6 +99,33 @@ export class AppComponent implements OnInit {
     this.myservice.configData.accountid = this.myConfigFormGroup.get(
       "accountId"
     ).value;
+    this.checkConfig = false;
+    //this.myConfigFormGroup.reset();
+    this.arrowButton = true;
+  }
+
+  onKeyUp(event: any) {
+    sessionStorage.setItem("plainText", event.target.value);
+    this.plainText = event.target.value;
+    this.parserService.nonAnsOptions = [];
+    this.parserService.nonAnsQuetions = [];
+    this.arrowButton = true;
+  }
+
+  questionCount = true;
+  questionTotal: number = 0;
+  qno = [];
+  regexCount = true;
+  questionNumber = [];
+  questionNumberCheck = true;
+  questionNo = 0;
+  onParserSubmit() {
+    //console.log('angular data::'+this.plainText);
+    this.displayText = "";
+    this.parserService.configData = this.myservice.configData;
+    this.parserService.explainationWithHint = new RegExp(
+      /(##es([\\s\\S]*?)##ee+)/gm
+    );
 
     if (this.myConfigFormGroup.get("choice").value === "Without Answer") {
       let answer = this.myservice.ansIdtRegex[
@@ -101,31 +137,93 @@ export class AppComponent implements OnInit {
         idntPattern: answer,
         groupofIdentifier: group
       };
+      this.result = this.parserService.withoutAnswer(
+        this.plainText,
+        this.answer
+      );
+
+      /* for (var i = 0; i < this.result.length; i++) {
+        this.displayText = this.result[i].question+"\n";
+        for(var j=0;j<this.result[i].choices.length;j++){
+          this.displayText += this.result[i].choices[j];
+        }
+        this.displayText += this.result.rightAnswers;
+      } */
+
+      this.displayText = this.result;
     } else if (this.myConfigFormGroup.get("choice").value === "With Answer") {
+      this.withAnswerPattern = this.myservice.answerRegex[
+        this.myConfigFormGroup.get("answerPattern").value
+      ];
+      this.result = this.parserService.withAnswer(
+        this.plainText,
+        this.withAnswerPattern
+      );
     } else {
     }
-    this.checkConfig = false;
-    //this.myConfigFormGroup.reset();
+
+    // validation of Parser JSON
+    if (this.result == null) {
+      this.regexCount = false;
+    } else {
+      this.regexCount = true;
+      if (this.myservice.questionCount != this.result.length) {
+        this.questionCount = false;
+        this.questionTotal = this.myservice.questionCount - this.result.length;
+      }
+      this.myservice.result = this.result;
+      console.log("submit done: ",this.result);
+      for (var i = 0; i < this.result.length; i++) {
+        if (this.result[i].choices.length != 4) {
+          this.questionNumberCheck = false;
+          this.qno.push((i+1));
+          this.questionNumber.push("Option Missing!");
+          this.questionNo ++;
+        }
+
+        if (this.result[i].rightAnswers.length == 0) {
+          this.questionNumberCheck = false;
+          this.qno.push((i+1));
+          this.questionNumber.push("Answer Missing!");
+          this.questionNo ++;
+        }
+      }
+      this.myservice.qno = this.qno;
+      this.myservice.questionNumber = this.questionNumber;
+    }
+
+    this.arrowButton = false;
+    //this.result = [];
+  }
+  question = true;
+  addQuestion() {
+    this.question = false;
+  }
+  option = true;
+  addOption() {
+    this.option = false;
   }
 
-  onKeyUp(event: any) {
-    sessionStorage.setItem("plainText", event.target.value);
-    this.plainText = event.target.value;
-    this.parserService.nonAnsOptions = [];
-    this.parserService.nonAnsQuetions = [];
+  onCancelQuestion() {
+    this.question = true;
   }
 
-  onParserSubmit() {
-    //console.log('angular data::'+this.plainText);
-    this.displayText = "";
-    this.parserService.configData = this.myservice.configData;
-    var result = this.parserService.withoutAnswer(
-      this.plainText,
-      this.answer
-    );
-    //console.log('final output: '+ JSON.stringify(result));
-    this.displayText = result;
-    result = [];
-    //location.href = "http://localhost:4200/";
+  onCancelOption() {
+    this.option = true;
+  }
+  identifire = true;
+  addIdentifire() {
+    this.identifire = false;
+  }
+  ans = true;
+  addAnswer() {
+    this.ans = false;
+  }
+
+  onCancelIdentifire() {
+    this.identifire = true;
+  }
+  onCancelAns() {
+    this.ans = true;
   }
 }
