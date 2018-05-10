@@ -39,7 +39,8 @@ export class ConfigService {
     "(1) A": "\((\d+)\)\s([A-D])",
     "(1) a or (1) A": "\((\d+)\)\s([a-dA-D])",
     "groupofIdentifier":
-      "(##qs-(\\d+)([\\s\\S]*?)##qe-\\d+)|(##os-(\\d+)([\\s\\S]*?)##oe-\\d+)"
+      "(##qs-(\\d+)([\\s\\S]*?)##qe-\\d+)|(##os-(\\d+)([\\s\\S]*?)##oe-\\d+)",
+      "explainationWithHint" : "(##es([\\s\\S]*?)##ee+)"
   };
   quetionsRegex = {
     "(1)": "^\\((\\d+)\\)\\s",

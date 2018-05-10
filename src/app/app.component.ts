@@ -124,7 +124,7 @@ export class AppComponent implements OnInit {
     this.displayText = "";
     this.parserService.configData = this.myservice.configData;
     this.parserService.explainationWithHint = new RegExp(
-      /(##es([\\s\\S]*?)##ee+)/gm
+      /(##es([\s\S]*?)##ee+)/gm
     );
 
     if (this.myConfigFormGroup.get("choice").value === "Without Answer") {
@@ -193,6 +193,7 @@ export class AppComponent implements OnInit {
     }
 
     this.arrowButton = false;
+    console.log("My Json: ",this.result);
     //this.result = [];
   }
   question = true;

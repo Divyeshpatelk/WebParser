@@ -498,16 +498,16 @@ export class ParserServiceService {
             j--;
             this.explainationArray.push({
               qno: no,
-              exp: dataOfQuetions.replace(this.configData.quePattern, "")
+              exp: dataOfQuetions.replace(new RegExp(this.configData.quePattern), "")
             });
           }
         }
       }
 
       //Display the explaination Array
-      /*
-     for(var k=1;k<explainationArray.length;k++){
-        console.log("Explaination is :- ","qno :- ",explainationArray[k].qno,"data :- ",explainationArray[k].exp);
+      
+    /* for(var k=1;k<this.explainationArray.length;k++){
+        console.log("Explaination is :- ","qno :- ",this.explainationArray[k].qno,"data :- ",this.explainationArray[k].exp);
     } */
     }
     return this.explainationArray;
