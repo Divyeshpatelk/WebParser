@@ -65,13 +65,18 @@ h4{
 }
 
 .stuck {
-  position: fixed;
+  position: absolute;
+  height: 400px;
+  width: 550px;
+  background-color: #eee;
+  overflow-y: scroll;
+}
+
+.stuckTemp{
   top: 170px;
   left: 700px;
   bottom: 85px;
   width: 550px;
-  background-color: #eee;
-  overflow-y: scroll;
 }
 
 .stuck p {

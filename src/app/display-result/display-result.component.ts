@@ -19,6 +19,7 @@ export class DisplayResultComponent implements OnInit {
     /*this.result = this.configservice.result;
     this.qno = this.configservice.qno;
     this.questionNumber = this.configservice.questionNumber;*/
+    //document.body.innerHTML = "<br> <p> My innerHTML work";
   }
 
 }

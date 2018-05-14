@@ -4,9 +4,9 @@ import { Injectable } from "@angular/core";
 export class ConfigService {
   questionCount = 0;
   constructor() {}
-  result;
-  qno = [];
-  questionNumber = [];
+  //result;
+  //qno = [];
+  //questionNumber = [];
   configData = {
     quePattern: "",
     optPattern: "",
@@ -20,9 +20,10 @@ export class ConfigService {
   };
 
   answerRegex = {
-    "ans.": "^ans:.*",
-    "answer": "^answer.+",
-    "=>": "^=>.+"
+    "Ans.": "Ans:",
+    "answer": "answer",
+    "=>": "=>.+",
+    "ans:":"ans: "
   };
 
   ansIdtRegex = {

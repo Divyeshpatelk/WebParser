@@ -21,7 +21,7 @@
       <form [formGroup]="myTextareaFormGroup">
         <div class="row">
           <div class="col-md-6">
-            <label for="textarea1">Enter Text</label>
+             <label for="textarea1">Enter Text</label>
             <textarea class="form-control config" id="textarea1" formControlName="plain" (keyup)="onKeyUp($event)" ng-model="plainText"
               value="{{plainText}}"></textarea>
             <!-- <div style="text-align:left" *ngIf="!checkConfig">
@@ -32,25 +32,30 @@
 
 
           <div class="col">
-            
-              <div class="stuck">
-                  <div style="text-align:center" *ngIf="!checkConfig">
-                    <h6 *ngIf="!displayText">(Empty Data)</h6>
-                    <!--<h6 *ngIf="!questionCount">Questions missing! no:- {{questionTotal}}</h6> -->
-                    <!-- <h6 *ngIf="!optionCount">Option missing! no: {{optionTotal}}</h6>
+             <label for="textarea1">Your Result</label>
+            <div class="stuck">
+              <div style="text-align:center" *ngIf="!checkConfig">
+                <h6 *ngIf="!displayText">(Empty Data)</h6>
+                <!--<h6 *ngIf="!questionCount">Questions missing! no:- {{questionTotal}}</h6> -->
+                <!-- <h6 *ngIf="!optionCount">Option missing! no: {{optionTotal}}</h6>
                     <h6 *ngIf="!answerCount">Answer missing! no: {{answerTotal}}</h6> -->
-                    <h6 *ngIf="!regexCount">Regex Pattern not match!</h6>
-                    <h6 *ngIf="!questionNumberCheck">Error: {{questionNo}}</h6>
-                  </div>
-                  <app-display-result [result]="result" [qno]="qno" [questionNumber]="questionNumber"></app-display-result>
-                </div>
+                <h6 *ngIf="!regexCount">Regex Pattern not match!</h6>
+                <h6 *ngIf="!questionNumberCheck">Error: {{questionNo}}</h6>
+              </div>
+              <app-display-result [result]="result" [qno]="qno" [questionNumber]="questionNumber"></app-display-result>
+            </div>
 
             <!-- <label for="textarea1">Your Json</label>
-            <textarea class="form-control config" id="textarea1" formGroupName="json" readonly ng-model="displayText" value="{{displayText | json}}"></textarea> -->
+            <textarea class="form-control" id="textarea1" readonly ng-model="displayText" value="{{displayText | json}}"></textarea> -->
 
           </div>
         </div>
       </form>
+    </div>
+    <br>
+    <div class="col-md-6">
+        <label for="textarea1">Your Json</label>
+      <textarea class="form-control config" id="textarea1" readonly ng-model="displayText" value="{{displayText | json}}"></textarea>
     </div>
   </div>
 
@@ -111,6 +116,7 @@
             <button type="button" class="btn1 btn-primary" (click)="addAnswer()">Add New</button>
             <select id="inputState" class="form-control" formControlName="answerPattern">
               <option selected>Ans.</option>
+              <option selected>ans:</option>
               <option selected>Answer</option>
               <option selected>=></option>
             </select>
@@ -130,7 +136,7 @@
               <option selected>1. (A)</option>
               <option selected>1. (a) or 1. (A)</option>
               <option selected>1. a</option>
-              <option selected>1. (A)</option>
+              <option selected>1. A</option>
               <option selected>1. a or 1. A</option>
               <option selected>(1) (a)</option>
               <option selected>(1) (A)</option>

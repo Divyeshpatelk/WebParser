@@ -102,6 +102,7 @@ export class AppComponent implements OnInit {
     this.checkConfig = false;
     //this.myConfigFormGroup.reset();
     this.arrowButton = true;
+    this.result = [];
   }
 
   onKeyUp(event: any) {
@@ -110,6 +111,7 @@ export class AppComponent implements OnInit {
     this.parserService.nonAnsOptions = [];
     this.parserService.nonAnsQuetions = [];
     this.arrowButton = true;
+    this.result = [];
   }
 
   questionCount = true;
@@ -120,8 +122,12 @@ export class AppComponent implements OnInit {
   questionNumberCheck = true;
   questionNo = 0;
   onParserSubmit() {
+    this.questionTotal = 0;
+    this.qno = [];
+    this.questionNumber = [];
+    this.questionNo = 0;
     //console.log('angular data::'+this.plainText);
-    this.displayText = "";
+    //this.displayText = "";
     this.parserService.configData = this.myservice.configData;
     this.parserService.explainationWithHint = new RegExp(
       /(##es([\s\S]*?)##ee+)/gm
@@ -150,18 +156,20 @@ export class AppComponent implements OnInit {
         this.displayText += this.result.rightAnswers;
       } */
 
-      this.displayText = this.result;
+
     } else if (this.myConfigFormGroup.get("choice").value === "With Answer") {
       this.withAnswerPattern = this.myservice.answerRegex[
         this.myConfigFormGroup.get("answerPattern").value
       ];
+      //console.log("My Answer 0:",this.myConfigFormGroup.get('answerPattern').value);
+      //console.log("My Answer 1: ",this.withAnswerPattern);
       this.result = this.parserService.withAnswer(
         this.plainText,
         this.withAnswerPattern
       );
     } else {
     }
-
+    this.displayText = this.result;
     // validation of Parser JSON
     if (this.result == null) {
       this.regexCount = false;
@@ -171,29 +179,38 @@ export class AppComponent implements OnInit {
         this.questionCount = false;
         this.questionTotal = this.myservice.questionCount - this.result.length;
       }
-      this.myservice.result = this.result;
+      //this.myservice.result = this.result;
       console.log("submit done: ",this.result);
       for (var i = 0; i < this.result.length; i++) {
         if (this.result[i].choices.length != 4) {
           this.questionNumberCheck = false;
           this.qno.push((i+1));
           this.questionNumber.push("Option Missing!");
-          this.questionNo ++;
+          this.questionNo++;
         }
 
-        if (this.result[i].rightAnswers.length == 0) {
+        if (this.result[i].rightAnswers.length == 0 || this.result[i].rightAnswers.length == null) {
           this.questionNumberCheck = false;
           this.qno.push((i+1));
           this.questionNumber.push("Answer Missing!");
-          this.questionNo ++;
+          this.questionNo++;
+        }
+
+        if(this.result[i].rightAnswers.length == 1 ){
+          if(this.result[i].rightAnswers[0] === null){
+            this.questionNumberCheck = false;
+            this.qno.push((i+1));
+            this.questionNumber.push("Answer Missing!");
+            this.questionNo++;
+          }
         }
       }
-      this.myservice.qno = this.qno;
-      this.myservice.questionNumber = this.questionNumber;
+      //this.myservice.qno = this.qno;
+      //this.myservice.questionNumber = this.questionNumber;
     }
 
     this.arrowButton = false;
-    console.log("My Json: ",this.result);
+    //console.log("My Json: ",this.result);
     //this.result = [];
   }
   question = true;
