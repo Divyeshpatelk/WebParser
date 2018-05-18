@@ -101,6 +101,7 @@
               <option selected>a)</option>
               <option selected>A)</option>
               <option selected>a) or A)</option>
+              <option selected>(1)</option>
             </select>
             <h5 *ngIf="!myConfigFormGroup.controls['optionPattern'].valid && myConfigFormGroup.controls['optionPattern'].touched">Select choice</h5>
           </div>
@@ -144,6 +145,7 @@
               <option selected>(1) a</option>
               <option selected>(1) A</option>
               <option selected>(1) a or (1) A</option>
+              <option selected>1. (1)</option>
             </select>
           </div>
           <div class="form-group col-md-4" *ngIf="!identifire">

@@ -126,6 +126,7 @@ export class AppComponent implements OnInit {
     this.qno = [];
     this.questionNumber = [];
     this.questionNo = 0;
+    this.questionNumberCheck = true;
     //console.log('angular data::'+this.plainText);
     //this.displayText = "";
     this.parserService.configData = this.myservice.configData;
@@ -171,7 +172,7 @@ export class AppComponent implements OnInit {
     }
     this.displayText = this.result;
     // validation of Parser JSON
-    if (this.result == null) {
+    if (this.result == null || this.result == []) {
       this.regexCount = false;
     } else {
       this.regexCount = true;
@@ -182,7 +183,7 @@ export class AppComponent implements OnInit {
       //this.myservice.result = this.result;
       console.log("submit done: ",this.result);
       for (var i = 0; i < this.result.length; i++) {
-        if (this.result[i].choices.length != 4) {
+        if (this.result[i].choices.length != 4 && this.result[i].choices.length != 5) {
           this.questionNumberCheck = false;
           this.qno.push((i+1));
           this.questionNumber.push("Option Missing!");
